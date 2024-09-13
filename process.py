@@ -5,16 +5,11 @@ import matplotlib.pyplot as plt
 import torch
 import csv
 
-def extend_mask(mask, k_x, k_y, flag=False):
-    extended_mask = mask.copy()
-    
-    m, n = mask.shape
-    for i in range(m):
-        for j in range(n):
-            if mask[i][j] == 1:
-                a, b, c, d = max(0, i-k_y), min(i+k_y+1, m), max(0, j-k_x), min(j+k_x+1, n)
-                if flag: b = min(i+2, m)
-                extended_mask[a:b, c:d] = 1
+from scipy.ndimage import binary_dilation
+
+def extend_mask(mask, k_x, k_y):
+    kernel = np.ones((2 * k_y + 1, 2 * k_x + 1), dtype=int)
+    extended_mask = binary_dilation(mask, structure=kernel).astype(mask.dtype)
     return extended_mask
 
 def get_detections(img_path, model):
