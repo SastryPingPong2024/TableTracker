@@ -29,8 +29,8 @@ def smooth_data(data):
             k += 1
         else:
             break
-    data[:k, 1:10] = data[k, 1:10]
-    data[:, 1:10] = median_smoothing(data[:, 1:10], 25)
+    data[:k, 1:] = data[k, 1:]
+    data[:, 1:] = median_smoothing(data[:, 1:], 25)
     return data
 
 def extend_mask(mask, k_x, k_y):
@@ -86,7 +86,7 @@ def process_video(input_video_path, output_csv_name, indent=0):
 
     data = []
     frame_number = 0
-    corners = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
+    corners = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
     base_height = 0
     while cap.isOpened():
         ret, frame = cap.read()
@@ -119,7 +119,7 @@ def process_video(input_video_path, output_csv_name, indent=0):
     data = smooth_data(data)
     with open(f"{output_csv_name}.csv", mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["frame","back_left_x","back_left_y","back_right_x","back_right_y","front_left_x","front_left_y","front_right_x","front_right_y","base_y","indent"])
+        writer.writerow(["frame","back_left_x","back_left_y","back_right_x","back_right_y","front_left_x","front_left_y","front_right_x","front_right_y","back_mid_x","back_mid_y","front_mid_x","front_mid_y","base_y","indent"])
         for row in data:
             writer.writerow(row)
     

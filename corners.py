@@ -24,13 +24,15 @@ def refine_corners(frame, bbox):
     frame_gray = cv2.resize(frame_gray, (256, 128), interpolation=cv2.INTER_AREA)
     frame_gray = torch.from_numpy(frame_gray).float().to(device).unsqueeze(0)  # Shape: (1, H, W)
     
-    output_np, assigned_points = process_image(frame_gray, model, device, threshold=0.5)
+    output_np, assigned_points = process_image(frame_gray, model, device, threshold=0.25)
     
     corners = np.array([
         assigned_points["top_left"],
         assigned_points["top_right"],
         assigned_points["bottom_left"],
-        assigned_points["bottom_right"]
+        assigned_points["bottom_right"],
+        assigned_points["top_mid"],
+        assigned_points["bottom_mid"]
     ])
     corners[:, 1] *= (bbox[3]-bbox[2]) / 128
     corners[:, 0] *= (bbox[1]-bbox[0]) / 256
