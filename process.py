@@ -256,4 +256,8 @@ def process_video(input_video_path, output_csv_name, indent=0):
 # ----------------------------
 
 if __name__ == "__main__":
-    process_video("../matches/match407/match407_18.mp4", "temp")
+    process_video("../matches/match1/match1_4.mp4", "temp")
+
+
+
+        

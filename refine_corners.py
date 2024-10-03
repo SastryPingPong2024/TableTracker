@@ -107,6 +107,7 @@ def assign_points_to_table(centroids, prior_points):
     
     for label, prior in prior_points.items():
         if len(centroids_list) == 0:
+            assigned_points[label] = [np.nan, np.nan]
             continue  # No more centroids to assign
     
         # Compute distances from prior to all remaining centroids
@@ -145,7 +146,7 @@ def refine_corners(model, device, frame, bbox, prior_points):
         adjusted_prior_points[key] = (x, y)
     
     frame_gray = torch.from_numpy(frame_gray_np).float().to(device).unsqueeze(0)  # Shape: (1, 1, H, W)
-    output_np, assigned_points = process_image(frame_gray, model, device, 0.75, adjusted_prior_points)
+    output_np, assigned_points = process_image(frame_gray, model, device, 0.5, adjusted_prior_points)
     
     # visualize_results(frame_gray_np, output_np, assigned_points)
     # input("")
@@ -158,6 +159,7 @@ def refine_corners(model, device, frame, bbox, prior_points):
         assigned_points.get("top_mid"),
         assigned_points.get("bottom_mid")
     ])
+    
     # Map points back to original image coordinates
     corners[:, 0] = corners[:, 0] * (bbox[1] - bbox[0]) / 256 + bbox[0]
     corners[:, 1] = corners[:, 1] * (bbox[3] - bbox[2]) / 128 + bbox[2]
