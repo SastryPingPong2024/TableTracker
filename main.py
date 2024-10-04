@@ -29,7 +29,7 @@ def process_match(match_folder, root_dir, gpu_id):
 
     # Process all videos in the match folder
     for video_file in os.listdir(input_dir):
-        if video_file.endswith(('.mp4', '.avi', '.mov')) and f"{video_file[:-4]}_table.csv" not in os.listdir(output_dir):  # Add or remove video extensions as needed
+        if video_file.endswith(('.mp4', '.avi', '.mov')): # and f"{video_file[:-4]}_table.csv" not in os.listdir(output_dir):  # Add or remove video extensions as needed
             video_path = os.path.join(input_dir, video_file)
             output_path = os.path.join(output_dir, os.path.splitext(video_file)[0] + '_table')
             print(f"Processing {video_file} from {match_folder} on GPU {gpu_id}")
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process videos in match folders in parallel using specified GPUs")
     parser.add_argument("root_dir", help="Root directory containing match folders")
     parser.add_argument("--gpu_ids", nargs='+', type=int, default=[0, 1, 2, 3], help="List of GPU IDs to use")
-    parser.add_argument("--workers_per_gpu", type=int, default=4, help="Number of workers per GPU")
+    parser.add_argument("--workers_per_gpu", type=int, default=40, help="Number of workers per GPU")
     args = parser.parse_args()
 
     main(args.root_dir, args.gpu_ids, args.workers_per_gpu)
