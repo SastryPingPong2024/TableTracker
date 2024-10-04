@@ -51,7 +51,7 @@ def extend_mask(mask, k_x, k_y):
 # ----------------------------
 
 def get_detections(img_path, model):
-    model_output = model(img_path)[0]
+    model_output = model(img_path, verbose=False)[0]
     
     orig_image = model_output.orig_img
     classes = model_output.boxes.cls
@@ -187,10 +187,9 @@ def process_video(input_video_path, output_csv_name, indent=0):
         if not ret:
             break
         
-        table_bbox = table_bboxes[frame_number]
-        refined_corners = data_smoothed[frame_number][1:-2]
-        refined_corners = refined_corners.reshape(-1, 2)
         try:
+            table_bbox = table_bboxes[frame_number]
+
             # Get the smoothed corners as prior
             prior_corners = data_smoothed[frame_number][1:-2]  # Exclude frame_number, base_height, indent
             prior_corners_array = prior_corners.reshape(-1, 2)
@@ -205,7 +204,9 @@ def process_video(input_video_path, output_csv_name, indent=0):
             }
             refined_corners = refine_corners(unet_model, device, frame, table_bbox, prior_points)
         except Exception as e:
-            print(e)
+            refined_corners = data_smoothed[frame_number][1:-2]
+            refined_corners = refined_corners.reshape(-1, 2)
+            refined_corners = np.concatenate((refined_corners, np.zeros((2, 2))), 0)
         
         # Fill missing corners with previous frame's corners
         if prev_refined_corners is not None:
@@ -213,6 +214,7 @@ def process_video(input_video_path, output_csv_name, indent=0):
                 x, y = refined_corners[i]
                 if x == 0 and y == 0:
                     refined_corners[i] = prev_refined_corners[i]
+                    
         prev_refined_corners = refined_corners.copy()
         
         refined_data.append([
@@ -231,7 +233,7 @@ def process_video(input_video_path, output_csv_name, indent=0):
     refined_data = np.array(refined_data)
     
     # Median smoothing
-    refined_data_smoothed = smooth_data(refined_data, window_size=10)
+    refined_data_smoothed = smooth_data(refined_data, window_size=15)
     
     # Write refined data to CSV
     with open(f"{output_csv_name}.csv", mode='w', newline='') as file:
@@ -256,7 +258,7 @@ def process_video(input_video_path, output_csv_name, indent=0):
 # ----------------------------
 
 if __name__ == "__main__":
-    process_video("../matches/match1/match1_4.mp4", "temp")
+    process_video("../matches/match1/match1_108.mp4", "temp")
 
 
 

@@ -29,7 +29,7 @@ def process_match(match_folder, root_dir, gpu_id):
 
     # Process all videos in the match folder
     for video_file in os.listdir(input_dir):
-        if video_file.endswith(('.mp4', '.avi', '.mov')):  # Add or remove video extensions as needed
+        if video_file.endswith(('.mp4', '.avi', '.mov')) and f"{video_file[:-4]}_table.csv" not in os.listdir(output_dir):  # Add or remove video extensions as needed
             video_path = os.path.join(input_dir, video_file)
             output_path = os.path.join(output_dir, os.path.splitext(video_file)[0] + '_table')
             print(f"Processing {video_file} from {match_folder} on GPU {gpu_id}")
